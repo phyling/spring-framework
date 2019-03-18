@@ -34,6 +34,20 @@ import javax.servlet.ServletContextListener;
  * @see #setContextInitializers
  * @see org.springframework.web.WebApplicationInitializer
  */
+
+/**
+ *
+ *  ContextLoaderListener继承 ContextLoader 类，实现 ServletContextListener 接口，实现 Servlet 容器启动和关闭时，
+ *  分别初始化和销毁 WebApplicationContext 容器。
+ *   因此ContextLoaderListener 是一个 javax.servlet.ContextLoaderListener对象
+ *   会初始化一个Root Spring WebApplicationContext 容器。这个过程，详细解析
+ *
+ *   这两个构造方法，是因为父类 ContextLoader 有这两个构造方法，所以必须重新定义。
+ *   比较需要注意的是，第二个构造方法，可以直接传递一个 WebApplicationContext 对象，那样，
+ *   实际 ContextLoaderListener 就无需在创建一个新的 WebApplicationContext 对象
+ *
+ *   总结：ContextLoaderListener 大部分工作都是在ContextLoader中完成的，也就是父类中完成
+ */
 public class ContextLoaderListener extends ContextLoader implements ServletContextListener {
 
 	/**
@@ -98,6 +112,11 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 	/**
 	 * Initialize the root web application context.
 	 */
+	/**
+	 * 调用父类 ContextLoader 的 #initWebApplicationContext(ServletContext servletContext) 方法，
+	 * 初始化 WebApplicationContext 对象。
+	 * @param event
+	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		initWebApplicationContext(event.getServletContext());
@@ -106,6 +125,8 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 
 	/**
 	 * Close the root web application context.
+	 * 关闭和销毁 web application context.
+	 * 实际也是在父类中完成的销毁
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {

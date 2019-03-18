@@ -58,7 +58,7 @@ import org.springframework.util.ClassUtils;
  * @see CommonAnnotationBeanPostProcessor
  * @see org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor
  * @see org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor
- * @see org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor
+ * //@see org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor
  */
 public class AnnotationConfigUtils {
 
@@ -145,6 +145,10 @@ public class AnnotationConfigUtils {
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
 
+		//主要是为了获得工厂对象，实例化AnnotationConfigApplicationContext的时候会调用父类
+		//GenericApplicationContext的构造器去实例化DefaultListableBeanFactory
+		//这里的registry其实际是GenericApplicationContext的子类实例，向上转型取得工厂的属性
+		//从而得到 beanFactory对象
 		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
 		if (beanFactory != null) {
 			if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {
@@ -159,11 +163,18 @@ public class AnnotationConfigUtils {
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 		//BeanDefinitio的注册，这里很重要，需要理解注册每个bean的类型
+		//org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+		//这个是spring生命周期非常重要的一个类
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			//需要注意的是ConfigurationClassPostProcessor的类型是BeanDefinitionRegistryPostProcessor
 			//而 BeanDefinitionRegistryPostProcessor 最终实现BeanFactoryPostProcessor这个接口
+			//因此需要对这两种类型的进行区分处理
+
+			//将一个类变成BeanDefinition
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
+			//这里是将BD注册到BeanFactory的BeanDefinitionMap容器中，并返回一个
+			//BeanDefinitionHolder对象
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
@@ -222,7 +233,9 @@ public class AnnotationConfigUtils {
 			BeanDefinitionRegistry registry, RootBeanDefinition definition, String beanName) {
 
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		//将bd注册到工厂的BeanDefinitionMap中
 		registry.registerBeanDefinition(beanName, definition);
+		//BeanDefinitionHolder 只是封装参数使用
 		return new BeanDefinitionHolder(definition, beanName);
 	}
 

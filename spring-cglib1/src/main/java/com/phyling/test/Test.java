@@ -7,24 +7,26 @@ import com.phyling.service.OrderService;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.cglib.core.SpringNamingPolicy;
 import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.lang.reflect.Method;
 
 public class Test {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext annotationConfigApplicationContext
-				= new AnnotationConfigApplicationContext(Appconfig.class);
-		System.out.println(annotationConfigApplicationContext.getBean(IndexService.class));
+				= new AnnotationConfigApplicationContext();
+		//System.out.println(annotationConfigApplicationContext.getBean(IndexService.class));
+		annotationConfigApplicationContext.register(Appconfig.class);
+		annotationConfigApplicationContext.refresh();
+		annotationConfigApplicationContext.getBean(IndexService.class);
 
-		//annotationConfigApplicationContext.refresh();
-		//annotationConfigApplicationContext.getBean(IndexService.class);
-//		LubanAppcofig lubanAppcofig = new LubanAppcofig();
-//		lubanAppcofig.testProxy();
-//		lubanAppcofig.testProxy();
 
 //
 //		Enhancer enhancer = new Enhancer();
 //		//增强父类，地球人都知道cglib是基于继承来的
-//		enhancer.setSuperclass(LubanAppcofig.class);
+//		enhancer.setSuperclass(Appconfig.class);
 //
 //		//不继承Factory接口
 //		enhancer.setUseFactory(false);
@@ -37,12 +39,17 @@ public class Test {
 //		//该BeanFactory的作用是在this调用时拦截该调用，并直接在beanFactory中获得目标bean
 //		//enhancer.setStrategy(new ConfigurationClassEnhancer.BeanFactoryAwareGeneratorStrategy(classLoader));
 //		//过滤方法，不能每次都去new
-//		enhancer.setCallback(new LubanCallback());
+//		enhancer.setCallback(new MethodInterceptor() {
+//			@Override
+//			public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+//				return null;
+//			}
+//		});
 //
-//		LubanAppcofig chil = (LubanAppcofig) enhancer.create();
-//		chil.testProxy();
+//		Appconfig chil = (Appconfig) enhancer.create();
+//		chil.indexDao();
 //
-//		chil.testProxy();
+//		chil.indexDao();
 
 
 	}
