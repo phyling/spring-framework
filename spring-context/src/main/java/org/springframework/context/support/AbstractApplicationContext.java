@@ -532,6 +532,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				//这个方法在当前版本的spring是没用任何代码的
 				//可能spring期待在后面的版本中去扩展吧
+				//当然其子类是有实现的
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
@@ -551,15 +552,20 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
+				//在具体的子类当中是初始化其他特殊的一些beans 默认当前是没有任何操作
 				onRefresh();
 
 				// Check for listener beans and register them.
+				//检查侦听器bean并注册它们
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
+				//实例化余下所有的非懒加载的单例beans
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
+				////调用LifecycleProcessor来完成此上下文的刷新
+				//方法并发布上下文刷新事件
 				finishRefresh();
 			}
 
@@ -570,6 +576,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				}
 
 				// Destroy already created singletons to avoid dangling resources.
+				//销毁已经创建的单例，以避免挂起资源。
 				destroyBeans();
 
 				// Reset 'active' flag.
@@ -582,6 +589,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			finally {
 				// Reset common introspection caches in Spring's core, since we
 				// might not ever need metadata for singleton beans anymore...
+				//重置Spring核心中的常见内省缓存，因为我们
+				//可能再也不需要单例bean的元数据了……
 				resetCommonCaches();
 			}
 		}
@@ -601,7 +610,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Initialize any placeholder property sources in the context environment
-		//这个方法目前没有子类去实现
+		//这个方法目前是空的，由子类去实现
 		//估计spring是期待后面的版本有子类去实现吧
 		initPropertySources();
 
@@ -710,20 +719,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * Instantiate and invoke all registered BeanFactoryPostProcessor beans,
-	 * respecting explicit order if given.
-	 * <p>Must be called before singleton instantiation.
+	 * 实例化并调用所有已注册的BeanFactoryPostProcessor bean，实际上我们已经在实例化注册器
+	 * AnnotationConfigApplicationContext实例的时候已经注册到DefaultListableBeanFactory 当中的beanDefinitionMap中
+	 * 这里拿出来进行解析
+	 * 必须在单例实例化之前调用。
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		//这个地方需要注意getBeanFactoryPostProcessors()是获取手动给spring的BeanFactoryPostProcessor
 		//自定义并不仅仅是程序员自己写的
-		//自己写的可以加companent也可以不加
-		//如果加了getBeanFactoryPostProcessors()这个地方得不得，是spring自己扫描的
+		//自己写的可以加component也可以不加
+		//如果加了getBeanFactoryPostProcessors()这个是spring内部自己扫描的BeanDefinitionRegistryPostProcessor
 		//为什么得不到getBeanFactoryPostProcessors（）这个方法是直接获取一个list，
 		//这个list是在AnnotationConfigApplicationContext被定义
-		//所谓的自定义的就是你手动调用AnnotationConfigApplicationContext.addBeanFactoryPostProcesor();
-
-
+		//所谓的自定义的就是你手动调用AnnotationConfigApplicationContext.addBeanFactoryPostProcessor();
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime

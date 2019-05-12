@@ -250,7 +250,7 @@ public class AnnotatedBeanDefinitionReader {
 		 */
 		abd.setScope(scopeMetadata.getScopeName());
 		/**
-		 * 生成类的名字通过beanNameGenerator记得布置过一个作业
+		 * 通过beanNameGenerator生成类的名字
 		 */
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 		/**
@@ -258,17 +258,17 @@ public class AnnotatedBeanDefinitionReader {
 		 * 分析源码可以知道他主要处理
 		 * Lazy DependsOn Primary Role等等注解
 		 * 处理完成之后processCommonDefinitionAnnotations中依然是把他添加到数据结构当中
-		 *
+		 * 严格的来说 应该是往abd 当中设置了相应的属性
 		 */
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 
 		/**
 		 * 如果在向容器注册注解Bean定义时，使用了额外的限定符注解则解析
-		 * 关于Qualifier和Primary前面的课当中讲过，主要涉及到spring的自动装配
+		 * 关于Qualifier和Primary前面解释过，主要涉及到spring的自动装配
 		 * 这里需要注意的
 		 * byName和qualifiers这个变量是Annotation类型的数组，里面存不仅仅是Qualifier注解
 		 * 理论上里面里面存的是一切注解，所以可以看到下面的代码spring去循环了这个数组
-		 * 然后依次判断了注解当中是否包含了Primary，是否包含了Lazyd
+		 * 然后依次判断了注解当中是否包含了Primary，是否包含了Lazy
 		 */
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
@@ -292,24 +292,28 @@ public class AnnotatedBeanDefinitionReader {
 		}
 
 		/**
-		 * 这个BeanDefinitionHolder也是一个数据结构
+		 * 这个BeanDefinitionHolder也是一个数据结构 里面只有3个属性 分别是beanName beanDefinition  aliases
 		 */
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 
 		/**
 		 * ScopedProxyMode 这个知识点比较复杂，需要结合web去理解
-		 * 可以暂时放一下，等说道springmvc的时候再说
+		 * 可以暂时放一下，等说道spring mvc的时候再说
 		 * 或者看情况现在说也是一样的
 		 */
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 
 		/**
 		 * 把上述的这个数据结构注册给registry
-		 * registy就是AnnotatonConfigApplicationContext
-		 * AnnotatonConfigApplicationContext在初始化的時候通過調用父類的構造方法
+		 * registry就是AnnotationConfigApplicationContext
+		 * AnnotationConfigApplicationContext在初始化的時候通過調用父類的構造方法
 		 * 實例化了一个DefaultListableBeanFactory
-		 * *registerBeanDefinition里面就是把definitionHolder这个数据结构包含的信息注册到
+		 * registerBeanDefinition里面就是把BeanDefinitionHolder这个数据结构包含的信息注册到
 		 * DefaultListableBeanFactory这个工厂
+		 * 说的直白点，其实就是封装对象的属性，然后分别注册到DefaultListableBeanFactory当中的
+		 * beanDefinitionMap和 aliasMap 当中
+		 *
+		 * 为什么要放入到beanDefinitionMap当中？ 后面的后置处理器会进行处理解析它 是全配置类还是半配置类等等
 		 */
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}

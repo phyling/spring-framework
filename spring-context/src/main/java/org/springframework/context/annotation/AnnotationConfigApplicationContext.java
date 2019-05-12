@@ -131,7 +131,15 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		//这里由于他有父类，故而会先调用父类的构造方法，然后才会调用自己的构造方法
 		//在自己构造方法中初始一个读取器和扫描器
 		this();
+		//这个方法就是注册配置类，真正的解析是在BeanFactoryPostProcessor的子类ConfigurationClassPostProcessor的
+		//postProcessorBeanFactory（）方法中解析分析是否是什么样子的配置类，是否需要进行cglib代理？
 		register(annotatedClasses);
+
+		//这个方法是spring 的核心 包括 加载 扫描 解析 创建对象 实例化bean 等一系列操作
+		//主要包含了12个方法，其中三个比较重要，
+		//1.invokeBeanFactoryPostProcessors()
+		//2.registryBeanPostProcessors()
+		//3.finishedBeanFactoryInitialization()
 		refresh();
 	}
 

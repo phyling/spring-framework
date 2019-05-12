@@ -68,7 +68,7 @@ final class PostProcessorRegistrationDelegate {
 					registryProcessor.postProcessBeanDefinitionRegistry(registry);
 					registryProcessors.add(registryProcessor);
 				}
-				else {//BeanDefinitionRegistryPostProcessor  BeanfactoryPostProcessor
+				else {//BeanDefinitionRegistryPostProcessor  BeanFactoryPostProcessor
 					regularPostProcessors.add(postProcessor);
 				}
 			}
@@ -78,7 +78,6 @@ final class PostProcessorRegistrationDelegate {
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
 			// PriorityOrdered, Ordered, and the rest.
 			//这个currentRegistryProcessors 放的是spring内部自己实现了BeanDefinitionRegistryPostProcessor接口的对象
-
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
@@ -92,7 +91,7 @@ final class PostProcessorRegistrationDelegate {
 			//而这些功能都是需要在spring工厂初始化完成之前执行
 			//要么在工厂最开始的时候、要么在工厂初始化之中，反正不能再之后
 			//因为如果在之后就没有意义，因为那个时候已经需要使用工厂了
-			//所以这里spring'在一开始就注册了一个BeanFactoryPostProcessor，用来插手springfactory的实例化过程
+			//所以这里spring'在一开始就注册了一个BeanFactoryPostProcessor，用来插手springFactory的实例化过程
 			//在这个地方断点可以知道这个类叫做ConfigurationClassPostProcessor
 			//ConfigurationClassPostProcessor那么这个类能干嘛呢？可以参考源码
 			//下面我们对这个牛逼哄哄的类（他能插手spring工厂的实例化过程还不牛逼吗？）重点解释

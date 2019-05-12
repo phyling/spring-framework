@@ -284,7 +284,6 @@ public class ContextLoader {
 		}
 		// 记录开始的时间
 		long startTime = System.currentTimeMillis();
-
 		try {
 			// Store context in local instance variable, to guarantee that
 			// it is available on ServletContext shutdown.

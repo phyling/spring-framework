@@ -293,7 +293,7 @@ class ConfigurationClassParser {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
 				//扫描普通类=componentScan=com.phyling
-				//这里扫描出来所有@@Component
+				//这里扫描出来所有@Component
 				//并且把扫描的出来的普通bean放到map当中
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());

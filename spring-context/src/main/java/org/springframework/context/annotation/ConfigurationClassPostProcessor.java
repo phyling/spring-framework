@@ -266,7 +266,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		//定义一个list存放app 提供的bd（项目当中提供了@Compent）
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
 		//获取容器中注册的所有bd名字
-		//7个
+		//7个(加配置类)或者6个(加配置类) ，因为JPA的支持是由系统决定的
 		String[] candidateNames = registry.getBeanDefinitionNames();
 
 		/**
@@ -277,7 +277,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
 			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef) ||
 					ConfigurationClassUtils.isLiteConfigurationClass(beanDef)) {
-				//果BeanDefinition中的configurationClass属性为full或者lite,则意味着已经处理过了,直接跳过
+				//如果BeanDefinition中的configurationClass属性为full或者lite,则意味着已经处理过了,直接跳过
 				//这里需要结合下面的代码才能理解
 				if (logger.isDebugEnabled()) {
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
